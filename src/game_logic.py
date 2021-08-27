@@ -4,7 +4,6 @@ from enum import IntEnum
 
 
 class Match(IntEnum):
-
     High_card = 1
     Pair = 2
     Two_pair = 3
@@ -15,6 +14,32 @@ class Match(IntEnum):
     Four_of_a_kind = 8
     Straight_flash = 9
     Royal_flush = 10
+
+
+class best_hand:
+    def __init__(self, player=None, player_hand=None, player_rank=None):
+        self.player = player
+        self.player_hand = player_hand
+        self.player_rank = player_rank
+
+    def __lt__(self, other):
+        if self.player_rank < other.player_rank:
+            return True
+        if self.player_rank > other.player_rank:
+            return False
+        for self_card, other_card in zip(self.player_hand, other.player_hand):
+            if self_card < other_card:
+                return True
+            if self_card > other_card:
+                return False
+        return False
+
+    def __eq__(self, other):
+        if self < other:
+            return False
+        if self > other:
+            return False
+        return True
 
 
 def same_card_counter(cards):
@@ -87,9 +112,9 @@ def is_straight(cards):
 
 def straight(cards):
     cards.sort(reverse=True)
-    for i in range(len(cards) - 5):
+    for i in range(len(cards) - 4):
         if is_straight(cards[i:i + 5]):
-            return cards[i - 5:i], Match.Straight
+            return cards[i:i + 5], Match.Straight
     return None, None
 
 
@@ -122,3 +147,16 @@ def compare_hands(player1, player2, board):
         if card1 < card2:
             return [player2], player2_rank, [player2_hand]
     return [player1, player2], player1_rank, [player1_hand, player2_hand]
+
+
+def who_wins(players, board):
+    players_hands = []
+    winners = []
+    for player in players:
+        player_hand, player_rank = rank_decider(player, board)
+        players_hands.append(best_hand(player=player, player_hand=player_hand, player_rank=player_rank))
+    winners_hand = max(players_hands)
+    for player_hand, player in zip(players_hands, players):
+        if player_hand == winners_hand:
+            winners.append(player)
+    return winners

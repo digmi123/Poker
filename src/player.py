@@ -4,6 +4,7 @@ class player:
         self.state = True
         self.hand = []
         self.balance = balance
+        self.total_bet_per_round = 0
 
     def add_card(self, card):
         self.hand.append(card)
@@ -11,6 +12,7 @@ class player:
     def bet(self, bet_amount):
         if self.balance >= bet_amount:
             self.balance -= bet_amount
+            self.total_bet_per_round += bet_amount
             return True
         return False
 
@@ -19,3 +21,4 @@ class player:
 
     def __repr__(self):
         return f" Name :  {self.name} \n hand : {self.hand} \n balance:{self.balance}"
+
